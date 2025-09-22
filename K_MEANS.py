@@ -49,13 +49,46 @@ for k, val in zip(K, inertia):
     plt.vlines(x=k, ymin=0, ymax=val, colors="gray", linestyles="dotted", alpha=0.6)
 
 plt.show()
-
 plt.scatter(
     centers_pca[:, 0], centers_pca[:, 1],
-    c="red", s=200, alpha=0.75, marker="X"
-)
+    c="red", s=200, alpha=0.75, marker="X")
 
 plt.title("K-means Clustering (PCA-reduced)")
 plt.show()
 
+
+# 3) Silhouette Score for Cluster Quality
+from sklearn.metrics import silhouette_score
+kmeans = KMeans(n_clusters=3, random_state=42).fit(X)
+score = silhouette_score(X, kmeans.labels_)
+print("Silhouette Score:", score)
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
+
+# 4) silhouette_scores for a range of clusters
+silhouette_scores = []
+K = range(2, 20)  # silhouette score requires at least 2 clusters
+
+for k in K:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    labels = kmeans.fit_predict(df[float_cols])
+    score = silhouette_score(df[float_cols], labels)
+    silhouette_scores.append(score)
+
+plt.plot(K, silhouette_scores, "bo-")
+plt.xlabel("Number of clusters (k)")
+plt.ylabel("Silhouette Score")
+plt.title("Silhouette Analysis")
+plt.xticks(np.arange(2, 21, 1))
+
+# Add vertical dotted lines
+for k, val in zip(K, silhouette_scores):
+    plt.vlines(x=k, ymin=0, ymax=val, colors="gray", linestyles="dotted", alpha=0.6)
+
+plt.show()
 
